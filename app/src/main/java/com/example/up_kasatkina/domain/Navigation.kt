@@ -5,6 +5,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.up_kasatkina.view.Splash
+import com.example.up_kasatkina.view.auth.Auth
 import com.example.up_kasatkina.view.registr.Registr
 
 @Composable
@@ -15,9 +16,9 @@ fun Navigation() {
         composable("Splash") {
             Splash(navController)
         }
-//        composable("Auth") {
-//            Auth(navController)
-//        }
+        composable("Auth") {
+            Auth(navController)
+        }
         composable("Registr") {
             Registr(navController)
         }
