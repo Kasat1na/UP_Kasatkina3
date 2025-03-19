@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,18 +42,28 @@ import com.example.up_kasatkina.R
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import androidx.compose.material3.*
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import coil.compose.rememberAsyncImagePainter
+import com.example.up_kasatkina.model.products
 
 
 @Composable
-fun Home() {
+fun Home(navController: NavController) {
+    val vm = viewModel{HomeViewModel()}
+    LaunchedEffect(Unit) {
+        vm.showproducts()
+        vm.showactions()
+        vm.showcategories()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(247, 247, 249, 255)) // Фон rgba(247, 247, 249, 1)
     ) {
         Spacer(modifier = Modifier.height(42.dp))
-        // Верхняя часть с иконками и текстом
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -97,124 +108,113 @@ fun Home() {
             }
         }
 
-        // Поисковая строка с иконкой lupa
+        // Поиск
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             TextField(
-                value = "", // Пример значения, сюда нужно добавить логику ввода
-                onValueChange = { /* Handle text input */ },
-                placeholder = {
-                    Text(
-                        text = "Поиск", // Меняем placeholder на "Поиск"
-                        fontSize = 16.sp, // Увеличиваем размер шрифта placeholder
-                        color = Color.Gray // Цвет placeholder
-                    )
-                },
+                value = vm.searchQuery,
+                onValueChange = { vm.updateSearchQuery(it) },
+                placeholder = { Text("Поиск", fontSize = 16.sp, color = Color.Gray) },
                 modifier = Modifier
-                    .fillMaxWidth(0.85f) // Уменьшаем ширину, чтобы оставить место для фильтра
-                    .height(56.dp) // Увеличиваем высоту поля для лучшего отображения текста
+                    .fillMaxWidth(0.85f)
+                    .height(56.dp)
                     .padding(horizontal = 14.dp)
-                    .shadow(4.dp, shape = RoundedCornerShape(12.dp), clip = false),
+                    .shadow(4.dp, shape = RoundedCornerShape(12.dp)),
                 leadingIcon = {
                     Icon(painter = painterResource(id = R.drawable.lupa), contentDescription = "Search", modifier = Modifier.size(17.dp))
                 },
-                shape = RoundedCornerShape(12.dp), // Скругленные углы для поля
+                shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.White, // Белый фон для активного состояния
-                    unfocusedContainerColor = Color.White, // Белый фон для неактивного состояния
-                    disabledContainerColor = Color.White, // Белый фон для отключенного состояния
-                    unfocusedIndicatorColor = Color.Transparent, // Убираем индикатор неактивного состояния
-                    focusedIndicatorColor = Color.Transparent // Убираем индикатор активного состояния
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
                 ),
-                textStyle = androidx.compose.ui.text.TextStyle(
-                    fontSize = 18.sp, // Увеличиваем размер текста внутри поля
-                    color = Color.Black // Цвет текста
-                )
+                textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp, color = Color.Black)
             )
-
-            // Круг с цветом rgba(72, 178, 231, 1) и иконкой filter справа от поисковой строки
             Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .background(Color(72, 178, 231)),
+                modifier = Modifier.size(50.dp).clip(CircleShape).background(Color(72, 178, 231)),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* Handle filter click */ }) {
+                IconButton(onClick = { /* Фильтр */ }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.filter), // Иконка filter
+                        painter = painterResource(id = R.drawable.filter),
                         contentDescription = "Filter",
                         modifier = Modifier.size(22.dp),
-                                tint = Color.White
+                        tint = Color.White
                     )
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(8.dp))
 
-
-        // Текст "Категории"
-        Text(
-            text = "Категории",
-            fontSize = 19.sp,
-            modifier = Modifier
-                .padding(16.dp)
-        )
-
-        // Белый контейнер с категориями
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(vertical = 12.dp)
+        // Категории
+        Text("Категории", fontSize = 19.sp, modifier = Modifier.padding(16.dp))
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                CategoryBox("Все")
-                CategoryBox("Outdoor")
-                CategoryBox("Tennis")
+            items(vm.categories) { category ->
+                CategoryBox(category.title) {
+                    navController.navigate("category_products/${category.id}") // Используем category.id
+                }
             }
+
         }
 
-
-
-
-        // Текст "Популярное" и "Все"
+        // Популярное или результаты поиска
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Популярное", fontSize = 19.sp)
-            Text(text = "Все",color = Color(72, 178, 231) )
+            Text(text = if (vm.searchQuery.isEmpty()) "Популярное" else "Результаты поиска", fontSize = 19.sp)
+            if (vm.searchQuery.isEmpty()) Text(text = "Все", color = Color(72, 178, 231))
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp) // Расстояние между карточками
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ProductCard()
-            ProductCard()
+            items(if (vm.searchQuery.isEmpty()) vm.products.take(2) else vm.filteredProducts) { product ->
+                ProductCard(product)
+            }
         }
-        // Текст "Категории"
         Text(
             text = "Акции",
             fontSize = 19.sp,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(horizontal = 16.dp) // Уменьшаем отступ только по бокам
         )
 
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f) // Используем weight вместо fillMaxSize
+        ) {
+            items(
+                vm.actions,
+                key = { actions -> actions.id }
+            ) { actions ->
+                Row(
+                    modifier = Modifier, // Меньший отступ между картинкой и следующими элементами
+                    verticalAlignment = Alignment.CenterVertically // Центрирование по вертикали
+                ) {
+                    // Размещение изображения по центру
+                    Image(
+                        painter = rememberAsyncImagePainter(actions.photo),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .height(150.dp) // Уменьшаем высоту картинки
+                            .fillMaxWidth() // Занимает всю доступную ширину
+                            .padding(horizontal = 16.dp) // Отступ по бокам
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.weight(1f))
         BottomMenu()
+
     }
 }
 @Composable
@@ -222,6 +222,7 @@ fun BottomMenu() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .background(Color.White) // Белый фон для меню
             .padding(vertical = 10.dp), // Паддинг сверху и снизу меню
         horizontalArrangement = Arrangement.SpaceEvenly, // Распределение иконок по ширине
@@ -284,58 +285,101 @@ fun BottomMenu() {
 }
 
 @Composable
-fun CategoryBox(text: String) {
+fun CategoryBox(categoryTitle: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(width = 110.dp, height = 45.dp) // Задаем фиксированные размеры
+            .size(width = 110.dp, height = 45.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.White) // Серый фон
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(Color.White)
+            .clickable(onClick = onClick)
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = text, fontSize = 16.sp, color = Color.Gray, modifier = Modifier.align(Alignment.Center) )
+        Text(text = categoryTitle)
     }
 }
 
 
+
+
+
 @Composable
-fun ProductCard() {
+fun ProductCard(product: products) {
+    val vm = viewModel{ HomeViewModel() }
+
+    // Создаем состояние для отслеживания лайка
+    var isLiked by remember { mutableStateOf(false) }
+
+    // Эффект при загрузке данных
+    LaunchedEffect(Unit) {
+        vm.showproducts()
+        vm.showactions()
+        vm.showcategories()
+    }
+
     Card(
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
-            .size(170.dp)
+            .size(180.dp) // Set card size
             .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // Белый фон
+        colors = CardDefaults.cardColors(containerColor = Color.White) // White background
     ) {
         Box(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            // Серый круг с иконкой like в верхнем левом углу
+            // Like icon with click listener
             Box(
                 modifier = Modifier
                     .size(26.dp)
                     .clip(CircleShape)
                     .background(Color(247, 247, 249, 255))
                     .align(Alignment.TopStart)
-                    .padding(4.dp),
+                    .padding(4.dp)
+                    .clickable {
+                        isLiked = !isLiked
+                        vm.addproducts(product.id) // Теперь product.id — это строка (UUID)
+                    }
+                ,
                 contentAlignment = Alignment.Center
             ) {
+                // Смена изображения иконки в зависимости от состояния лайка
                 Icon(
-                    painter = painterResource(id = R.drawable.like), // Иконка "like"
+                    painter = painterResource(id = if (isLiked) R.drawable.like2 else R.drawable.like),
                     contentDescription = "Like",
                     modifier = Modifier.size(16.dp),
-                    tint = Color.Black
+                    tint = if (isLiked) Color.Red else Color.Black // Смена цвета при лайке
                 )
             }
 
-            // Контент карточки
+            // Product Information in a vertical arrangement
             Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Top // Arranges the content vertically
             ) {
-                Text("BEST SELLER", fontSize = 12.sp, color = Color.Blue)
-                Text("Nike Air Max", fontWeight = FontWeight.Bold)
-                Text("₱752.00", fontSize = 14.sp)
+                // Product Image
+                Image(
+                    painter = rememberAsyncImagePainter(product.image),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(bottom = 8.dp) // Space between image and text
+                        .height(80.dp)
+                        .width(80.dp)
+                )
+                Text(
+                    text = product.title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = "${product.cost} ₽",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+
             }
 
-            // Полукруг с иконкой basket в правом нижнем углу
+            // Basket icon at the bottom right corner
             Box(
                 modifier = Modifier
                     .size(width = 30.dp, height = 30.dp)
@@ -345,7 +389,7 @@ fun ProductCard() {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.basket), // Иконка "basket"
+                    painter = painterResource(id = R.drawable.basket),
                     contentDescription = "Basket",
                     modifier = Modifier.size(13.dp),
                     tint = Color.White
@@ -358,10 +402,9 @@ fun ProductCard() {
 
 
 
-@Preview
-@Composable
-fun PreviewHome() {
-    Home()
-}
+
+
+
+
 
 

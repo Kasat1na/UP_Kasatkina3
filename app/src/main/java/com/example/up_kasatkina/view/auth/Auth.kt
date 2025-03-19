@@ -185,6 +185,7 @@ fun Auth(navController: NavController) {
                     errorMessage = error
                     showDialog = true
                 }
+                navController.navigate("Home")
             },
             modifier = Modifier
                 .fillMaxWidth()

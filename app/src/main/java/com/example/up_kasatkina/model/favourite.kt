@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class favourite (
-    val id: String,
+    val id: String = "",
     val product_id: String,
     val user_id: String,
 )
