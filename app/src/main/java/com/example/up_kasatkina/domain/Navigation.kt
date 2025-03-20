@@ -7,7 +7,9 @@ import androidx.navigation.compose.composable
 import com.example.up_kasatkina.view.Splash
 import com.example.up_kasatkina.view.auth.Auth
 import com.example.up_kasatkina.view.categoryProducts.CategoryProducts
+import com.example.up_kasatkina.view.favourite.Favourite
 import com.example.up_kasatkina.view.home.Home
+import com.example.up_kasatkina.view.profile.Profile
 import com.example.up_kasatkina.view.registr.Registr
 
 @Composable
@@ -31,6 +33,12 @@ fun Navigation() {
         composable("category_products/{category_id}") { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("category_id") ?: ""
             CategoryProducts(navController = navController, category = categoryId)
+        }
+        composable("Profile") {
+            Profile(navController)
+        }
+        composable("Favourite") {
+            Favourite(navController)
         }
 
     }

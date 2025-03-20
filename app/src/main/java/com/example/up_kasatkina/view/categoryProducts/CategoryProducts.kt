@@ -121,5 +121,9 @@ fun CategoryProducts(navController: NavController, category: String) {
             }
         }
     }
+    Column {
+        Spacer(modifier = Modifier.weight(1f)) // Works inside Column
+        com.example.up_kasatkina.view.home.BottomMenu(navController)
+    }
 }
 

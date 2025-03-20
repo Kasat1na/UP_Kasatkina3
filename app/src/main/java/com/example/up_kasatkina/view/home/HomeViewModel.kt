@@ -21,7 +21,7 @@ class HomeViewModel: ViewModel() {
     var categories by mutableStateOf<List<categories>>(listOf())
     var filteredProducts by mutableStateOf<List<products>>(listOf()) // Отфильтрованные товары
     var searchQuery by mutableStateOf("")
-
+    var favourites by mutableStateOf<Set<String>>(setOf())
     fun showproducts() {
         viewModelScope.launch {
             try {
@@ -70,21 +70,46 @@ class HomeViewModel: ViewModel() {
             }
         }
     }
-    fun addproducts(productId: String) {
+    // Проверяет, какие товары в избранном у текущего пользователя
+    fun checkIfFavourite() {
         viewModelScope.launch {
             try {
                 val user = Constant.supabase.auth.currentUserOrNull()
                 if (user != null) {
-                    Constant.supabase.from("favourite")
-                        .insert(
-                            favourite(
-                                user_id = user.id,  // UUID пользователя
-                                product_id = productId // UUID продукта
-                            )
-                        )
-                    Log.d("Success", "Продукт добавлен в избранное: $productId")
-                } else {
-                    Log.d("error", "Пользователь не авторизован")
+                    val favList = Constant.supabase.from("favourite")
+                        .select()
+                        .decodeList<favourite>()
+                        .filter { it.user_id == user.id }
+                        .map { it.product_id }
+                        .toSet()  // Преобразуем в Set для удобства поиска
+
+                    favourites = favList // Обновляем состояние
+                }
+            } catch (e: Exception) {
+                Log.d("error", e.message.toString())
+            }
+        }
+    }
+
+    // Добавление/удаление товара в избранное
+    fun toggleFavourite(productId: String) {
+        viewModelScope.launch {
+            try {
+                val user = Constant.supabase.auth.currentUserOrNull()
+                if (user != null) {
+                    if (favourites.contains(productId)) {
+                        // Удаляем товар из избранного
+                        Constant.supabase.from("favourite")
+                            .delete { "user_id = '${user.id}' AND product_id = '$productId'" }
+
+                        favourites = favourites - productId
+                    } else {
+                        // Добавляем товар в избранное
+                        Constant.supabase.from("favourite")
+                            .insert(favourite(user_id = user.id, product_id = productId))
+
+                        favourites = favourites + productId
+                    }
                 }
             } catch (e: Exception) {
                 Log.d("error", e.message.toString())

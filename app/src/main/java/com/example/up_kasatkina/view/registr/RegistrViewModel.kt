@@ -33,17 +33,36 @@ class RegistrViewModel: ViewModel() {
 
         viewModelScope.launch {
             try {
+                // Регистрация пользователя
                 Constant.supabase.auth.signUpWith(Email) {
                     this.email = uslogin
                     this.password = uspassword
                 }
-                navController.navigate("Auth") // Переход ТОЛЬКО если регистрация успешна
+
+                // Получаем ID только что зарегистрированного пользователя
+                val userId = Constant.supabase.auth.currentUserOrNull()?.id
+                    ?: throw Exception("Ошибка получения ID пользователя")
+
+                // Добавляем пользователя в таблицу profiles
+                Constant.supabase.from("profiles").insert(
+                    mapOf(
+                        "id" to userId,
+                        "user_id" to userId,
+                        "firstname" to usname,
+                        "lastname" to "",
+                        "address" to "",
+                        "phone" to "",
+                        "photo" to ""
+                    )
+                )
+                navController.navigate("Auth") // Переход после успешной регистрации
             } catch (e: Exception) {
                 Log.d("err", e.message.toString())
                 onError("Ошибка регистрации: ${e.message}")
             }
         }
     }
+
     private fun isValidEmail(email: String): Boolean {
         return emailPattern.matcher(email).matches()
     }

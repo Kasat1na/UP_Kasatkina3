@@ -57,6 +57,7 @@ fun Home(navController: NavController) {
         vm.showproducts()
         vm.showactions()
         vm.showcategories()
+        vm.checkIfFavourite()
     }
     Column(
         modifier = Modifier
@@ -213,12 +214,12 @@ fun Home(navController: NavController) {
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        BottomMenu()
+        BottomMenu(navController)
 
     }
 }
 @Composable
-fun BottomMenu() {
+fun BottomMenu(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,7 +230,7 @@ fun BottomMenu() {
         verticalAlignment = Alignment.CenterVertically // Вертикальное выравнивание иконок
     ) {
         // Иконка Home
-        IconButton(onClick = { /* Обработка нажатия на Home */ }) {
+        IconButton(onClick = {navController.navigate("Home") }) {
             Icon(
                 painter = painterResource(id = R.drawable.home), // Иконка "Home"
                 contentDescription = "Home",
@@ -238,7 +239,7 @@ fun BottomMenu() {
         }
 
         // Иконка Like
-        IconButton(onClick = { /* Обработка нажатия на Like */ }) {
+        IconButton(onClick = {navController.navigate("Favourite") }) {
             Icon(
                 painter = painterResource(id = R.drawable.like), // Иконка "Like"
                 contentDescription = "Like",
@@ -274,7 +275,7 @@ fun BottomMenu() {
         }
 
         // Иконка Profile
-        IconButton(onClick = { /* Обработка нажатия на Profile */ }) {
+        IconButton(onClick = {navController.navigate("Profile") }) {
             Icon(
                 painter = painterResource(id = R.drawable.profile), // Иконка "Profile"
                 contentDescription = "Profile",
@@ -302,30 +303,25 @@ fun CategoryBox(categoryTitle: String, onClick: () -> Unit) {
 
 
 
-
 @Composable
 fun ProductCard(product: products) {
     val vm = viewModel{ HomeViewModel() }
 
-    // Создаем состояние для отслеживания лайка
-    var isLiked by remember { mutableStateOf(false) }
-
-    // Эффект при загрузке данных
-    LaunchedEffect(Unit) {
-        vm.showproducts()
-        vm.showactions()
-        vm.showcategories()
+    LaunchedEffect(vm.favourites) {
+        vm.checkIfFavourite() // Обновляем избранное при изменении
     }
+
+    val isLiked = vm.favourites.contains(product.id) // Проверяем, в избранном ли товар
 
     Card(
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
-            .size(180.dp) // Set card size
+            .size(180.dp)
             .padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White) // White background
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Box(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            // Like icon with click listener
+            // Кнопка лайка
             Box(
                 modifier = Modifier
                     .size(26.dp)
@@ -333,23 +329,17 @@ fun ProductCard(product: products) {
                     .background(Color(247, 247, 249, 255))
                     .align(Alignment.TopStart)
                     .padding(4.dp)
-                    .clickable {
-                        isLiked = !isLiked
-                        vm.addproducts(product.id) // Теперь product.id — это строка (UUID)
-                    }
-                ,
+                    .clickable { vm.toggleFavourite(product.id) }, // Изменяем избранное
                 contentAlignment = Alignment.Center
             ) {
-                // Смена изображения иконки в зависимости от состояния лайка
                 Icon(
                     painter = painterResource(id = if (isLiked) R.drawable.like2 else R.drawable.like),
                     contentDescription = "Like",
                     modifier = Modifier.size(16.dp),
-                    tint = if (isLiked) Color.Red else Color.Black // Смена цвета при лайке
+                    tint = if (isLiked) Color.Red else Color.Black // Красное, если в избранном
                 )
             }
 
-            // Product Information in a vertical arrangement
             Column(
                 modifier = Modifier
                     .padding(8.dp)
