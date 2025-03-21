@@ -27,24 +27,19 @@ import com.example.up_kasatkina.view.home.ProductCard
 @Composable
 fun CategoryProducts(navController: NavController, category: String) {
     val vm = viewModel { HomeViewModel() }
-    var selectedCategory by remember { mutableStateOf(category) }
-
+    var selectedCategory by remember { mutableStateOf(category) }// хранит текущую выбранную категорию
     LaunchedEffect(Unit) {
         vm.showcategories()
         vm.showproducts()
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(240, 240, 240)) // Серый фон
+            .background(Color(240, 240, 240))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Отступ сверху
         Spacer(modifier = Modifier.height(42.dp))
-
-        // Круглая кнопка "Назад"
         Box(
             modifier = Modifier
                 .size(50.dp)
@@ -61,27 +56,22 @@ fun CategoryProducts(navController: NavController, category: String) {
                 )
             }
         }
-
-
-        // Название категории
         Text(
+            // Если категория найдена в списке показывается её название если нет — текст Категория
             text = vm.categories.find { it.id == selectedCategory }?.title ?: "Категория",
             fontSize = 24.sp,
             color = Color.Black
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Категории (горизонтальный список)
         LazyRow {
             items(vm.categories) { categories ->
-                val isSelected = categories.id == selectedCategory
+                val isSelected = categories.id == selectedCategory // является ли текущий элемент выбранной
                 Box(
                     modifier = Modifier
                         .padding(end = 8.dp)
                         .background(if (isSelected) Color(0xFF64B5F6) else Color.White, shape = MaterialTheme.shapes.medium)
                         .clickable {
-                            selectedCategory = categories.id
+                            selectedCategory = categories.id //при нажатии меняется катег
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
@@ -94,9 +84,7 @@ fun CategoryProducts(navController: NavController, category: String) {
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn {
             items(vm.products.filter { it.category_id == selectedCategory }.chunked(2)) { rowProducts ->
                 Row(
@@ -113,7 +101,6 @@ fun CategoryProducts(navController: NavController, category: String) {
                             ProductCard(product)
                         }
                     }
-                    // Если в последней строке только 1 товар - заполняем пустое место
                     if (rowProducts.size == 1) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -122,7 +109,7 @@ fun CategoryProducts(navController: NavController, category: String) {
         }
     }
     Column {
-        Spacer(modifier = Modifier.weight(1f)) // Works inside Column
+        Spacer(modifier = Modifier.weight(1f))
         com.example.up_kasatkina.view.home.BottomMenu(navController)
     }
 }

@@ -52,19 +52,19 @@ import java.time.format.TextStyle
 @Composable
 fun Profile(navController: NavController) {
     val vm = viewModel { ProfileViewModel() }
-    var isEditing by remember { mutableStateOf(false) } // Состояние для отслеживания режима редактирования
+    var isEditing by remember { mutableStateOf(false) } // состояние для отслеживания режима редактирования
     vm.showProfile()
-    // Состояния для каждого поля
+    // Состояния для каждого поля - хранят текущие данные юзер
     var firstname by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
 
-
+// проверяем загружены ли данные профиля
     if (vm.profiles.isNotEmpty()) {
         val profile = vm.profiles.firstOrNull()
 
-        // Пересоздаём состояние при изменении режима редактирования
+        // пересоздаём состояние при изменении режима редактирования
         LaunchedEffect(vm.profiles) {
             if (!isEditing && profile != null) {
                 firstname = profile.firstname
@@ -73,7 +73,6 @@ fun Profile(navController: NavController) {
                 phone = profile.phone
             }
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,9 +87,9 @@ fun Profile(navController: NavController) {
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { /* Handle navigation */ }) {
+                IconButton(onClick = {  }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.menu), // Иконка меню
+                        painter = painterResource(id = R.drawable.menu),
                         contentDescription = "Menu",
                         modifier = Modifier.size(22.dp)
                     )
@@ -98,13 +97,13 @@ fun Profile(navController: NavController) {
 
                 Box(
                     modifier = Modifier
-                        .weight(1f) // Равномерно распределяет оставшееся пространство
-                        .wrapContentWidth(Alignment.CenterHorizontally) // Центрирует по горизонтали
+                        .weight(1f)
+                        .wrapContentWidth(Alignment.CenterHorizontally)
                 ) {
                     Text(text = "Профиль", fontSize = 24.sp)
                 }
                 IconButton(onClick = {
-                    if (isEditing) { // Если был режим редактирования и нажали кнопку – сохраняем
+                    if (isEditing) { // если был режим редактирования и нажали кнопку – сохраняем
                         profile?.let {
                             vm.updateProfile(
                                 firstname,
@@ -115,7 +114,7 @@ fun Profile(navController: NavController) {
                             )
                         }
                     }
-                    isEditing = !isEditing // Переключаем состояние после сохранения
+                    isEditing = !isEditing // переключаем состояние после сохранения
                 }) {
                     if (isEditing) {
                         Text(
@@ -133,10 +132,9 @@ fun Profile(navController: NavController) {
                     }
                 }
                 }
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Отображаем поля профиля
+            // отображаем поля профиля
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -148,17 +146,16 @@ fun Profile(navController: NavController) {
                     painter = rememberAsyncImagePainter(vm.profiles.firstOrNull()?.photo),
                     contentDescription = "Фото профиля",
                     modifier = Modifier
-                        .padding(bottom = 8.dp) // Отступ снизу
-                        .size(80.dp) // Размер изображения
-                        .clip(CircleShape) // Круглая форма
+                        .padding(bottom = 8.dp)
+                        .size(80.dp)
+                        .clip(CircleShape)
                 )
-
-                // Имя пользователя
+                // Имя
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Имя", fontSize = 14.sp, color = Color.Black)
                 Spacer(modifier = Modifier.height(6.dp))
                 TextField(
-                    value = firstname, // Имя
+                    value = firstname,
                     onValueChange = { if (isEditing) firstname = it },
                     label = { Text("Имя") },
                     modifier = Modifier
@@ -175,13 +172,12 @@ fun Profile(navController: NavController) {
                         focusedIndicatorColor = Color.Transparent
                     )
                 )
-
-                // Фамилия пользователя
+                // Фамилия
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Фамилия", fontSize = 14.sp, color = Color.Black)
                 Spacer(modifier = Modifier.height(6.dp))
                 TextField(
-                    value = lastname, // Фамилия
+                    value = lastname,
                     onValueChange = { if (isEditing) lastname = it },
                     label = { Text("Фамилия") },
                     modifier = Modifier
@@ -198,13 +194,12 @@ fun Profile(navController: NavController) {
                         focusedIndicatorColor = Color.Transparent
                     )
                 )
-
-                // Адрес пользователя (если есть)
+                // Адрес
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Адрес", fontSize = 14.sp, color = Color.Black)
                 Spacer(modifier = Modifier.height(6.dp))
                 TextField(
-                    value = address, // Адрес (если есть)
+                    value = address,
                     onValueChange = { if (isEditing) address = it },
                     label = { Text("Адрес") },
                     modifier = Modifier
@@ -221,13 +216,12 @@ fun Profile(navController: NavController) {
                         focusedIndicatorColor = Color.Transparent
                     )
                 )
-
-                // Телефон пользователя (если есть)
+                // Телефон
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Телефон", fontSize = 14.sp, color = Color.Black)
                 Spacer(modifier = Modifier.height(6.dp))
                 TextField(
-                    value = phone, // Телефон (если есть)
+                    value = phone,
                     onValueChange = { if (isEditing) phone = it },
                     label = { Text("Телефон") },
                     modifier = Modifier
@@ -245,13 +239,10 @@ fun Profile(navController: NavController) {
                     )
                 )
             }
-
         }
-
-
     }
     Column {
-        Spacer(modifier = Modifier.weight(1f)) // Works inside Column
+        Spacer(modifier = Modifier.weight(1f))
         com.example.up_kasatkina.view.home.BottomMenu(navController)
     }
 

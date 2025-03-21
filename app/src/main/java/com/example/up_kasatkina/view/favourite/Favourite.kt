@@ -26,13 +26,11 @@ import com.example.up_kasatkina.view.home.ProductCard
 @Composable
 fun Favourite(navController: NavController) {
     val vm: FavouriteViewModel = viewModel()
-    val homeVm: HomeViewModel = viewModel() // Добавляем доступ к товарам
-
+    val homeVm: HomeViewModel = viewModel() // добавляем доступ к товарам
     LaunchedEffect(Unit) {
         vm.showfavourite()
-        homeVm.showproducts() // Загружаем все продукты
+        homeVm.showproducts() // загружаем все продукты
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,20 +56,16 @@ fun Favourite(navController: NavController) {
                 )
             }
         }
-
         Text(
             text = "Избранное",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         val favouriteProducts = homeVm.products.filter { product ->
-            vm.favourite.any { it.product_id == product.id } // Сопоставляем избранное с товарами
+            vm.favourite.any { it.product_id == product.id } // оставляем только избранное товары
         }
-
         if (favouriteProducts.isEmpty()) {
             Text(
                 text = "Ваш список избранного пуст",
@@ -92,7 +86,7 @@ fun Favourite(navController: NavController) {
                             Box(
                                 modifier = Modifier.weight(1f)
                             ) {
-                                ProductCard(product)
+                                ProductCard(product) //product — объект товара
                             }
                         }
                         if (rowProducts.size == 1) {

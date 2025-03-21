@@ -43,15 +43,15 @@ import com.example.up_kasatkina.R
 //@Preview
 @Composable
 fun Auth(navController: NavController) {
-    var passwordVisible by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) } //видимость пароля
     val vm = viewModel { AuthViewModel() }
-    var showDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) } // для отображения диалогового окна с ошибкой
+    var errorMessage by remember { mutableStateOf("") } // для хранения сообщения об ошибке
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            shape = RoundedCornerShape(16.dp), // Закругленные края
-            containerColor = Color(247, 247, 249, 255), // Цвет фона, соответствующий полям ввода
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color(247, 247, 249, 255),
             title = {
                 Text(
                     text = "Ошибка",
@@ -94,9 +94,9 @@ fun Auth(navController: NavController) {
                 .clip(CircleShape)
                 .background(Color(247, 247, 249, 255))
                 .align(Alignment.Start),
-            contentAlignment = Alignment.Center // Центрируем иконку внутри круга
+            contentAlignment = Alignment.Center
         ) {
-            IconButton(onClick = { /* Handle navigation */ }) {
+            IconButton(onClick = {  }) {
                 Icon(
                     painter = painterResource(id = R.drawable.circle),
                     contentDescription = "Back",
@@ -116,12 +116,12 @@ fun Auth(navController: NavController) {
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             value = vm.uslogin,
-            onValueChange = { vm.uslogin = it },
+            onValueChange = { vm.uslogin = it }, //обновляет значение почты в vm.uslogin
             isError = vm.emailError,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(247, 247, 249, 255), RoundedCornerShape(26.dp)), // Увеличен радиус
+                .background(Color(247, 247, 249, 255), RoundedCornerShape(26.dp)),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color(247, 247, 249, 255),
                 unfocusedContainerColor = Color(247, 247, 249, 255),
@@ -143,7 +143,7 @@ fun Auth(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(247, 247, 249, 255), RoundedCornerShape(26.dp)), // Увеличен радиус
+                .background(Color(247, 247, 249, 255), RoundedCornerShape(26.dp)),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
@@ -167,21 +167,21 @@ fun Auth(navController: NavController) {
 
         Spacer(modifier = Modifier.height(8.dp))
         Row(
-            modifier = Modifier.fillMaxWidth(), // Заполняет всю ширину
-            horizontalArrangement = Arrangement.End, // Выравнивание слева
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Text(
                 text = "Восстановить",
-                color = Color.Gray// Цвет для текста, если хотите изменить
+                color = Color.Gray
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                vm.auth { error ->
+                vm.auth { error -> // если ошибка то сообщение, если нет то навигация
                     errorMessage = error
                     showDialog = true
                 }
@@ -192,7 +192,7 @@ fun Auth(navController: NavController) {
                 .height(80.dp)
             .padding(vertical = 12.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF48B2E7)) // Кнопка всегда активна
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF48B2E7))
         ) {
             Text(color = Color.White, text = "Войти", fontSize = 18.sp)
         }
@@ -202,12 +202,12 @@ fun Auth(navController: NavController) {
             Text(
                 color = Color.Gray,
                 text = "Вы впервые? ",
-                fontWeight = FontWeight.Normal // обычный текст для первой части
+                fontWeight = FontWeight.Normal
             )
             Text(
                 color = Color.Gray,
                 text = "Создать",
-                fontWeight = FontWeight.Bold // жирный текст для "Войти"
+                fontWeight = FontWeight.Bold
             )
         }
 

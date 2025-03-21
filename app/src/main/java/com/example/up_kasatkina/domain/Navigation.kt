@@ -29,7 +29,7 @@ fun Navigation() {
         composable("Home") {
             Home(navController)
         }
-        // Добавляем категорию как параметр в URL
+        //передает в него параметр category_id из URL для отображения продуктов выбранной категории
         composable("category_products/{category_id}") { backStackEntry ->
             val categoryId = backStackEntry.arguments?.getString("category_id") ?: ""
             CategoryProducts(navController = navController, category = categoryId)

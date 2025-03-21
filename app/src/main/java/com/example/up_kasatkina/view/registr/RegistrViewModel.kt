@@ -21,7 +21,6 @@ class RegistrViewModel: ViewModel() {
     var uslogin by mutableStateOf("")
     var uspassword by mutableStateOf("")
     var emailError by mutableStateOf(false)
-
     // Регулярное выражение для проверки email
     private val emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
     fun registr(navController: NavController, onError: (String) -> Unit) {
@@ -30,7 +29,6 @@ class RegistrViewModel: ViewModel() {
             onError("Некорректный email! Укажите email в формате name@domain.com")
             return
         }
-
         viewModelScope.launch {
             try {
                 // Регистрация пользователя
@@ -38,11 +36,9 @@ class RegistrViewModel: ViewModel() {
                     this.email = uslogin
                     this.password = uspassword
                 }
-
                 // Получаем ID только что зарегистрированного пользователя
                 val userId = Constant.supabase.auth.currentUserOrNull()?.id
-                    ?: throw Exception("Ошибка получения ID пользователя")
-
+                    ?: throw Exception("Ошибка получения ID пользователя") // если нет то искл
                 // Добавляем пользователя в таблицу profiles
                 Constant.supabase.from("profiles").insert(
                     mapOf(
@@ -55,14 +51,13 @@ class RegistrViewModel: ViewModel() {
                         "photo" to ""
                     )
                 )
-                navController.navigate("Auth") // Переход после успешной регистрации
+                navController.navigate("Auth")
             } catch (e: Exception) {
                 Log.d("err", e.message.toString())
                 onError("Ошибка регистрации: ${e.message}")
             }
         }
     }
-
     private fun isValidEmail(email: String): Boolean {
         return emailPattern.matcher(email).matches()
     }

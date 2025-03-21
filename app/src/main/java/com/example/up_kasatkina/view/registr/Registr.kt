@@ -44,17 +44,16 @@ import java.time.format.TextStyle
 //@Preview
 @Composable
 fun Registr(navController: NavController) {
-    var passwordVisible by remember { mutableStateOf(false) }
-    var agreedToTerms by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }//видимостью пароля
+    var agreedToTerms by remember { mutableStateOf(false) } // согласие
     val vm = viewModel { RegistrViewModel() }
     var showDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            shape = RoundedCornerShape(16.dp), // Закругленные края
-            containerColor = Color(247, 247, 249, 255), // Цвет фона, соответствующий полям ввода
-            title = {
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color(247, 247, 249, 255),             title = {
                 Text(
                     text = "Ошибка",
                     fontSize = 20.sp,
@@ -81,7 +80,6 @@ fun Registr(navController: NavController) {
         )
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -96,9 +94,9 @@ fun Registr(navController: NavController) {
                 .clip(CircleShape)
                 .background(Color(247, 247, 249, 255))
                 .align(Alignment.Start),
-            contentAlignment = Alignment.Center // Центрируем иконку внутри круга
+            contentAlignment = Alignment.Center
         ) {
-            IconButton(onClick = { /* Handle navigation */ }) {
+            IconButton(onClick = {  }) {
                 Icon(
                     painter = painterResource(id = R.drawable.circle),
                     contentDescription = "Back",
@@ -106,7 +104,6 @@ fun Registr(navController: NavController) {
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Регистрация", fontSize = 30.sp, color = Color.Black)
         Spacer(modifier = Modifier.height(16.dp))
@@ -117,7 +114,7 @@ fun Registr(navController: NavController) {
         Spacer(modifier = Modifier.height(6.dp))
         TextField(
             value = vm.usname,
-            onValueChange = { vm.usname = it },
+            onValueChange = { vm.usname = it }, //присваиваем обновленное значение
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
@@ -131,7 +128,6 @@ fun Registr(navController: NavController) {
                 focusedIndicatorColor = Color.Transparent
             )
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Email", fontSize = 14.sp, color = Color.Black, modifier = Modifier.align(Alignment.Start))
         Spacer(modifier = Modifier.height(6.dp))
@@ -153,7 +149,6 @@ fun Registr(navController: NavController) {
             )
 
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Пароль", fontSize = 14.sp, color = Color.Black, modifier = Modifier.align(Alignment.Start))
         Spacer(modifier = Modifier.height(6.dp))
@@ -182,10 +177,7 @@ fun Registr(navController: NavController) {
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent
             )
-
-
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(
@@ -195,15 +187,13 @@ fun Registr(navController: NavController) {
             )
             Text(
                 text = "Даю согласие на обработку персональных данных",
-                fontSize = 18.sp, // Увеличиваем размер шрифта
-                color = Color.Gray, // Устанавливаем серый цвет
+                fontSize = 18.sp,
+                color = Color.Gray,
                 style = androidx.compose.ui.text.TextStyle(
                     textDecoration = TextDecoration.Underline // Подчеркивание текста
-                ) // Подчеркивание текста
+                )
             )
-
         }
-
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
@@ -214,30 +204,28 @@ fun Registr(navController: NavController) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp) // Устанавливаем высоту кнопки
-                .padding(vertical = 12.dp), // Добавляем вертикальные отступы для увеличения кнопки
-            shape = RoundedCornerShape(16.dp), // Увеличиваем радиус закругления углов
-
-            enabled = agreedToTerms,
+                .height(80.dp)
+                .padding(vertical = 12.dp),
+            shape = RoundedCornerShape(16.dp),
+            enabled = agreedToTerms, // Включение или выключение кнопки
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (agreedToTerms) Color(0xFF48B2E7) else Color(43, 107, 139), // Темно-синий rgba(43, 107, 139, 1)
-                disabledContainerColor = Color(43, 107, 139) // Явно указываем цвет для неактивного состояния
+                containerColor = if (agreedToTerms) Color(0xFF48B2E7) else Color(43, 107, 139),
+                disabledContainerColor = Color(43, 107, 139)
             )
         ) {
             Text(color = Color.White, text = "Зарегистрироваться", fontSize = 18.sp) // Увеличиваем шрифт для кнопки
         }
-
         Spacer(modifier = Modifier.height(164.dp))
         TextButton(onClick = { navController.navigate("Auth") }) {
             Text(
                 color = Color.Gray,
                 text = "Есть аккаунт? ",
-                fontWeight = FontWeight.Normal // обычный текст для первой части
+                fontWeight = FontWeight.Normal
             )
             Text(
                 color = Color.Gray,
                 text = "Войти",
-                fontWeight = FontWeight.Bold // жирный текст для "Войти"
+                fontWeight = FontWeight.Bold
             )
         }
 

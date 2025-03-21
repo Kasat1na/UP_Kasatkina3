@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class AuthViewModel: ViewModel() {
-    var uslogin by mutableStateOf("")
+    var uslogin by mutableStateOf("") //значение введенного email пользователя
     var uspassword by mutableStateOf("")
-    var emailError by mutableStateOf(false)
+    var emailError by mutableStateOf(false) //для отслеживания, является ли email некорректным
 
     // Регулярное выражение для проверки email
     private val emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
@@ -25,7 +25,6 @@ class AuthViewModel: ViewModel() {
             onError("Некорректный email! Укажите email в формате name@domenname.ru")
             return
         }
-
         viewModelScope.launch {
             try {
                 Constant.supabase.auth.signInWith(Email){
@@ -37,7 +36,7 @@ class AuthViewModel: ViewModel() {
             }
         }
     }
-
+//проверяет соответствует ли введенный почта регулярному выражению
     private fun isValidEmail(email: String): Boolean {
         return emailPattern.matcher(email).matches()
     }

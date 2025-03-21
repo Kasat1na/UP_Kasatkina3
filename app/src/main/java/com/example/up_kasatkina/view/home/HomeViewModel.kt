@@ -19,30 +19,31 @@ class HomeViewModel: ViewModel() {
     var products by mutableStateOf<List<products>>(listOf())
     var actions by mutableStateOf<List<actions>>(listOf())
     var categories by mutableStateOf<List<categories>>(listOf())
-    var filteredProducts by mutableStateOf<List<products>>(listOf()) // Отфильтрованные товары
-    var searchQuery by mutableStateOf("")
-    var favourites by mutableStateOf<Set<String>>(setOf())
+    var filteredProducts by mutableStateOf<List<products>>(listOf()) // отфильтрованные товары
+    var searchQuery by mutableStateOf("") //строка поиска
+    var favourites by mutableStateOf<Set<String>>(setOf()) //избранное
     fun showproducts() {
         viewModelScope.launch {
             try {
                 products = Constant.supabase.from("products")
                     .select()
                     .decodeList<products>()
-                filterProducts() // Фильтруем товары при загрузке
+                filterProducts() // фильтруем товары при загрузке (поиск)
             } catch (e: Exception) {
                 Log.d("error", e.message.toString())
             }
         }
     }
-
+//фильтрация товаров по поисковому запросу
     fun filterProducts() {
+        //если пусто, то все иначе фильтруем по титлу
         filteredProducts = if (searchQuery.isBlank()) {
             products
         } else {
             products.filter { it.title.contains(searchQuery, ignoreCase = true) }
         }
     }
-
+//обновляет searchQuery
     fun updateSearchQuery(query: String) {
         searchQuery = query
         filterProducts()
@@ -70,7 +71,7 @@ class HomeViewModel: ViewModel() {
             }
         }
     }
-    // Проверяет, какие товары в избранном у текущего пользователя
+    // проверяет какие товары в избранном у текущего пользователя
     fun checkIfFavourite() {
         viewModelScope.launch {
             try {
@@ -79,11 +80,11 @@ class HomeViewModel: ViewModel() {
                     val favList = Constant.supabase.from("favourite")
                         .select()
                         .decodeList<favourite>()
-                        .filter { it.user_id == user.id }
-                        .map { it.product_id }
-                        .toSet()  // Преобразуем в Set для удобства поиска
+                        .filter { it.user_id == user.id } //оставляем только текущ польз
+                        .map { it.product_id } //получаем только товары
+                        .toSet()  // удаляем дубликаты
 
-                    favourites = favList // Обновляем состояние
+                    favourites = favList // обновляем состояние
                 }
             } catch (e: Exception) {
                 Log.d("error", e.message.toString())
@@ -91,7 +92,7 @@ class HomeViewModel: ViewModel() {
         }
     }
 
-    // Добавление/удаление товара в избранное
+    // добавление/удаление товара в избранное
     fun toggleFavourite(productId: String) {
         viewModelScope.launch {
             try {
@@ -100,7 +101,7 @@ class HomeViewModel: ViewModel() {
                     if (favourites.contains(productId)) {
                         // Удаляем товар из избранного
                         Constant.supabase.from("favourite")
-                            .delete { "user_id = '${user.id}' AND product_id = '$productId'" }
+                            .delete { "user_id = '${user.id}' AND product_id = '$productId'" } //конкретный товар тек польз
 
                         favourites = favourites - productId
                     } else {

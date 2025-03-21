@@ -62,7 +62,7 @@ fun Home(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(247, 247, 249, 255)) // Фон rgba(247, 247, 249, 1)
+            .background(Color(247, 247, 249, 255))
     ) {
         Spacer(modifier = Modifier.height(42.dp))
         Row(
@@ -72,26 +72,20 @@ fun Home(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-                IconButton(onClick = { /* Handle navigation */ }) {
+                IconButton(onClick = {  }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.menu), // Иконка меню
+                        painter = painterResource(id = R.drawable.menu),
                         contentDescription = "Menu",
                         modifier = Modifier.size(22.dp)
                     )
                 }
-
-
-            // Текст "Главная" по центру
-//            Spacer(modifier = Modifier.weight(1f)) // Отступ между иконкой и текстом
             Box(
                 modifier = Modifier
-                    .weight(1f) // Равномерно распределяет оставшееся пространство
-                    .wrapContentWidth(Alignment.CenterHorizontally) // Центрирует по горизонтали
+                    .weight(1f)
+                    .wrapContentWidth(Alignment.CenterHorizontally)
             ) {
                 Text(text = "Главная", fontSize = 30.sp)
             }
-
-            // Белый круг с иконкой "bag" справа
             Box(
                 modifier = Modifier
                     .size(50.dp)
@@ -99,23 +93,22 @@ fun Home(navController: NavController) {
                     .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = { /* Handle bag click */ }) {
+                IconButton(onClick = {  }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.bag), // Иконка bag
+                        painter = painterResource(id = R.drawable.bag),
                         contentDescription = "Bag",
                         modifier = Modifier.size(22.dp)
                     )
                 }
             }
         }
-
         // Поиск
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             TextField(
                 value = vm.searchQuery,
-                onValueChange = { vm.updateSearchQuery(it) },
+                onValueChange = { vm.updateSearchQuery(it) }, // обновляет запрос в ViewModel
                 placeholder = { Text("Поиск", fontSize = 16.sp, color = Color.Gray) },
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
@@ -148,9 +141,7 @@ fun Home(navController: NavController) {
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(8.dp))
-
         // Категории
         Text("Категории", fontSize = 19.sp, modifier = Modifier.padding(16.dp))
         LazyRow(
@@ -159,21 +150,21 @@ fun Home(navController: NavController) {
         ) {
             items(vm.categories) { category ->
                 CategoryBox(category.title) {
-                    navController.navigate("category_products/${category.id}") // Используем category.id
+                    navController.navigate("category_products/${category.id}") // используем category.id и навигация по выбранной категории
                 }
             }
 
         }
-
         // Популярное или результаты поиска
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            //Если searchQuery пустой то
             Text(text = if (vm.searchQuery.isEmpty()) "Популярное" else "Результаты поиска", fontSize = 19.sp)
             if (vm.searchQuery.isEmpty()) Text(text = "Все", color = Color(72, 178, 231))
         }
-
+        //две карточки
         LazyRow(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -186,36 +177,33 @@ fun Home(navController: NavController) {
             text = "Акции",
             fontSize = 19.sp,
             modifier = Modifier
-                .padding(horizontal = 16.dp) // Уменьшаем отступ только по бокам
+                .padding(horizontal = 16.dp)
         )
-
         LazyColumn(
             modifier = Modifier
-                .weight(1f) // Используем weight вместо fillMaxSize
+                .weight(1f)
         ) {
             items(
                 vm.actions,
                 key = { actions -> actions.id }
             ) { actions ->
                 Row(
-                    modifier = Modifier, // Меньший отступ между картинкой и следующими элементами
-                    verticalAlignment = Alignment.CenterVertically // Центрирование по вертикали
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Размещение изображения по центру
                     Image(
                         painter = rememberAsyncImagePainter(actions.photo),
                         contentDescription = "",
                         modifier = Modifier
-                            .height(150.dp) // Уменьшаем высоту картинки
-                            .fillMaxWidth() // Занимает всю доступную ширину
-                            .padding(horizontal = 16.dp) // Отступ по бокам
+                            .height(150.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     )
                 }
             }
         }
         Spacer(modifier = Modifier.weight(1f))
         BottomMenu(navController)
-
     }
 }
 @Composable
@@ -224,12 +212,11 @@ fun BottomMenu(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .background(Color.White) // Белый фон для меню
-            .padding(vertical = 10.dp), // Паддинг сверху и снизу меню
-        horizontalArrangement = Arrangement.SpaceEvenly, // Распределение иконок по ширине
-        verticalAlignment = Alignment.CenterVertically // Вертикальное выравнивание иконок
+            .background(Color.White)
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Иконка Home
         IconButton(onClick = {navController.navigate("Home") }) {
             Icon(
                 painter = painterResource(id = R.drawable.home), // Иконка "Home"
@@ -237,8 +224,6 @@ fun BottomMenu(navController: NavController) {
                 modifier = Modifier.size(24.dp)
             )
         }
-
-        // Иконка Like
         IconButton(onClick = {navController.navigate("Favourite") }) {
             Icon(
                 painter = painterResource(id = R.drawable.like), // Иконка "Like"
@@ -246,35 +231,29 @@ fun BottomMenu(navController: NavController) {
                 modifier = Modifier.size(24.dp)
             )
         }
-
-        // Голубой круг с иконкой Basket
         Box(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(Color(72, 178, 231)), // Цвет голубого круга
+                .background(Color(72, 178, 231)),
             contentAlignment = Alignment.Center
         ) {
-            IconButton(onClick = { /* Обработка нажатия на Basket */ }) {
+            IconButton(onClick = {  }) {
                 Icon(
                     painter = painterResource(id = R.drawable.basket), // Иконка "Basket"
                     contentDescription = "Basket",
                     modifier = Modifier.size(24.dp),
-                    tint = Color.White // Белый цвет иконки
+                    tint = Color.White
                 )
             }
         }
-
-        // Иконка Bell
-        IconButton(onClick = { /* Обработка нажатия на Bell */ }) {
+        IconButton(onClick = {  }) {
             Icon(
                 painter = painterResource(id = R.drawable.bell), // Иконка "Bell"
                 contentDescription = "Bell",
                 modifier = Modifier.size(24.dp)
             )
         }
-
-        // Иконка Profile
         IconButton(onClick = {navController.navigate("Profile") }) {
             Icon(
                 painter = painterResource(id = R.drawable.profile), // Иконка "Profile"
@@ -299,19 +278,13 @@ fun CategoryBox(categoryTitle: String, onClick: () -> Unit) {
         Text(text = categoryTitle)
     }
 }
-
-
-
-
 @Composable
 fun ProductCard(product: products) {
     val vm = viewModel{ HomeViewModel() }
-
     LaunchedEffect(vm.favourites) {
-        vm.checkIfFavourite() // Обновляем избранное при изменении
+        vm.checkIfFavourite() // обновляем избранное при изменении
     }
-
-    val isLiked = vm.favourites.contains(product.id) // Проверяем, в избранном ли товар
+    val isLiked = vm.favourites.contains(product.id) // проверяем в избранном ли товар
 
     Card(
         shape = RoundedCornerShape(15.dp),
@@ -321,7 +294,6 @@ fun ProductCard(product: products) {
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Box(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-            // Кнопка лайка
             Box(
                 modifier = Modifier
                     .size(26.dp)
@@ -344,14 +316,13 @@ fun ProductCard(product: products) {
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.Top // Arranges the content vertically
+                verticalArrangement = Arrangement.Top
             ) {
-                // Product Image
                 Image(
                     painter = rememberAsyncImagePainter(product.image),
                     contentDescription = "",
                     modifier = Modifier
-                        .padding(bottom = 8.dp) // Space between image and text
+                        .padding(bottom = 8.dp)
                         .height(80.dp)
                         .width(80.dp)
                 )
@@ -368,8 +339,6 @@ fun ProductCard(product: products) {
                 )
 
             }
-
-            // Basket icon at the bottom right corner
             Box(
                 modifier = Modifier
                     .size(width = 30.dp, height = 30.dp)
